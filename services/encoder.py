@@ -1,5 +1,9 @@
 from PIL import Image
+from sklearn.cluster import KMeans
+from sklearn.utils import shuffle
+from sklearn.metrics import pairwise_distances_argmin
 from services.logging import logger
+import numpy as np
 
 
 def _read_image(path):
@@ -12,11 +16,23 @@ def _read_image(path):
   return img, pixel_map
 
 
-def _get_top_256(pixel_map):
-  return []
+def _get_quantized_image(img, pixel_map):
+  image_array = np.array([pixel_map[i,j] for i in range(img.size[0]) for j in range(img.size[1])], dtype=np.float64)
+  image_array_sample = shuffle(image_array, random_state=0)[:(len(image_array) * 1)//100]
+  kmeans = KMeans(n_clusters=256, random_state=0).fit(image_array_sample)
+  labels = kmeans.predict(image_array)
+  centers = kmeans.cluster_centers_
+  new_data = np.array([centers[labels[i * img.size[1] + j]] for i in range(img.size[0]) for j in range(img.size[1])])
+  print(len(new_data))
+  print(new_data[0])
+  np.asarray(a).reshape(2, 2, 4)
+
+  print(nd2[0][0])
+  return nd2
 
 
 def encode(path):
   img, pixel_map = _read_image(path)
-  print(_get_top_256(pixel_map))
+  new_pixel_data = _get_quantized_image(img, pixel_map)
+  print(new_pixel_data.shape)
   return ""

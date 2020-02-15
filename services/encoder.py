@@ -1,4 +1,5 @@
 from PIL import Image
+import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from sklearn.utils import shuffle
 from sklearn.metrics import pairwise_distances_argmin
@@ -17,7 +18,7 @@ def _read_image(path):
 
 
 def _get_quantized_image(img, pixel_map):
-  image_array = np.array([pixel_map[i,j] for i in range(img.size[0]) for j in range(img.size[1])], dtype=np.int8)
+  image_array = np.array([pixel_map[i,j] for i in range(img.size[0]) for j in range(img.size[1])], dtype=np.float64) / 255
   image_array_sample = shuffle(image_array, random_state=0)[:(len(image_array) * 1)//100]
   kmeans = KMeans(n_clusters=256, random_state=0).fit(image_array_sample)
   labels = kmeans.predict(image_array)
@@ -29,5 +30,11 @@ def _get_quantized_image(img, pixel_map):
 def encode(path):
   img, pixel_map = _read_image(path)
   new_pixel_data = _get_quantized_image(img, pixel_map)
-  print(new_pixel_data.shape)
+
+  plt.figure(3)
+  plt.clf()
+  plt.axis('off')
+  plt.title('Quantized image (64 colors, Random)')
+  plt.imshow(new_pixel_data)
+  plt.show()
   return ""

@@ -18,18 +18,27 @@ def _read_image(path):
 
 
 def _get_quantized_image(img, pixel_map):
-  image_array = np.array([pixel_map[i,j] for i in range(img.size[0]) for j in range(img.size[1])], dtype=np.float64) / 255
+  w, h, d = img.size[0], img.size[1], len(pixel_map[0,0])
+  image_array = np.array([pixel_map[i,j] for j in range(h) for i in range(w)], dtype=np.float64) / 255
   image_array_sample = shuffle(image_array, random_state=0)[:(len(image_array) * 1)//100]
   kmeans = KMeans(n_clusters=256, random_state=0).fit(image_array_sample)
   labels = kmeans.predict(image_array)
   centers = kmeans.cluster_centers_
-  new_data = np.array([centers[labels[i * img.size[1] + j]] for i in range(img.size[0]) for j in range(img.size[1])])
-  return np.asarray(new_data).reshape(img.size[0], img.size[1], len(pixel_map[0,0]))
+
+  new_data = np.zeros((h, w, d))
+  label_idx = 0
+  for j in range(h):
+    for i in range(w):
+      new_data[j][i] = centers[labels[label_idx]]
+      label_idx += 1
+
+  return new_data
 
 
 def encode(path):
   img, pixel_map = _read_image(path)
   new_pixel_data = _get_quantized_image(img, pixel_map)
+  print(new_pixel_data.shape)
 
   plt.figure(3)
   plt.clf()

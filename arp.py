@@ -23,8 +23,7 @@ parser.add_argument(
     "--n_colors",
     default=256,
     required=False,
-    help=
-    "number of distinct colors to be used for an image frame (pallette size)")
+    help="number of distinct colors to be used for an image frame (pallette size)")
 parser.add_argument("--remove",
                     default=-1,
                     required=False,

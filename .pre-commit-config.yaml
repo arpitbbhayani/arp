@@ -1,0 +1,16 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/arpitbbhayani/arp
+    rev: v2.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+    -   id: yapf
+        name: running yapf
+        description: This hook auto formats using yapf.
+        entry: yapf . --in-place --recursive --parallel --exclude 'venv'
+        language: python
+        types: [text]
